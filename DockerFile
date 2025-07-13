@@ -1,4 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+# Ajoute Node.js à l'image build pour supporter npm
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
+
 WORKDIR /src
 COPY . .
 WORKDIR /src/Requestrr.WebApi
@@ -7,4 +13,4 @@ RUN dotnet publish -c Release -o /app/out
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
 WORKDIR /app
 COPY --from=build /app/out .
-ENTRYPOINT ["dotnet", "Requestrr.dll"]
+ENTRYPOINT ["dotnet", "Requestrr.WebApi.dll"]
